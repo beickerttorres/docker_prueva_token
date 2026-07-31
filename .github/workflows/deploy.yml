@@ -23,4 +23,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: Beickert/mi-app:latest
+          tags: beickert/mi-app:latest
