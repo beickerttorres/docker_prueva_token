@@ -1,0 +1,51 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: proxy-nginx
+    ports:
+     - "80:80"
+    volumes:
+     - ./nginx/default.conf:/ext/nginx/conf.d/default.conf
+    depends_on:
+     - app-backend
+    networks:
+    - red-cba
+     
+
+  db:
+    image: mysql:8.0
+    container_name: db_produccion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - red_interna
+
+  app:
+    image: beickert/mi-app:v1
+    container_name: app_produccion
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - "5051:5051"
+    networks:
+      - red-cba
+
+networks:
+  red-cba:
+   name:red-cba
+
+volumes:
+  db_data:
+    name:db_data
